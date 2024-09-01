@@ -1,6 +1,9 @@
 package com.github.yuraraexe.introductionMod;
+import com.github.yuraraexe.introductionMod.item.IntroductionItems;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -12,15 +15,17 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
-@Mod(introductionMod.MOD_ID)
-public class introductionMod
+@Mod(IntroductionMod.MOD_ID)
+public class IntroductionMod
 {
     public static final String MOD_ID = "introductionmod";
     private static final Logger LOGGER = LogUtils.getLogger();
-    public introductionMod()
+    public IntroductionMod()
     {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::commonSetup);
+        //アイテムレジストリをイベントバスに登録
+        IntroductionItems.register(modEventBus);
         MinecraftForge.EVENT_BUS.register(this);
         modEventBus.addListener(this::addCreative);
     }
@@ -29,6 +34,10 @@ public class introductionMod
     }
     private void addCreative(BuildCreativeModeTabContentsEvent event)
     {
+        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS){
+            event.accept(IntroductionItems.RAW_SHIMANIUM);
+            event.accept(IntroductionItems.SHIMANIUM_INGOT);
+        }
     }
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event)
